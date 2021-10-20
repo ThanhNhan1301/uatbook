@@ -29,7 +29,10 @@ export default function Home(props) {
             const handleFilter = () => {
                 const result = products.filter((item) => {
                     if (item.name) {
-                        return removeAccents(item.name.toLowerCase()).includes(text.toLowerCase())
+                        console.log(removeAccents(item.name.toLowerCase()))
+                        return removeAccents(item.name.toLowerCase()).includes(
+                            removeAccents(text.toLowerCase())
+                        )
                     } else {
                         return false
                     }
