@@ -105,7 +105,7 @@ export default function Home(props) {
     )
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
     const res = await fetch('https://uatbook.vercel.app/api/book')
     const result = await res.json()
     return {

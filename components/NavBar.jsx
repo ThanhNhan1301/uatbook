@@ -4,7 +4,7 @@ import { FaUserAlt } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 
 export default function NavBar() {
-    //const { isLogin, current } = useSelector((state) => state.userCurrent)
+    const { isLogin, current } = useSelector((state) => state.userCurrent)
     return (
         <div
             className='
@@ -21,13 +21,7 @@ export default function NavBar() {
                 relative
             '
             >
-                {/* {isLogin ? (
-                    <span>{current}</span>
-                ) : (
-                    <div className='p-4 bg-gray-500 rounded-full opacity-90 active:opacity-100'>
-                        <FaUserAlt />
-                    </div>
-                )} */}
+                {isLogin && <span>{current}</span>}
             </div>
         </div>
     )
