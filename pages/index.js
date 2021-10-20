@@ -1,23 +1,41 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import data from '../utils/data'
+import { useRef, useState } from 'react'
 import removeAccents from '../utils/removeAccents'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/dist/client/router'
+import { useSelector } from 'react-redux'
 
-export default function Home() {
-    const [renderData, setRenderData] = useState(data)
+export default function Home(props) {
+    const isLogin = useSelector((state) => state.userCurrent.isLogin)
+    const products = props.data
+    const [renderData, setRenderData] = useState([])
+    const ref = useRef(null)
+
+    const router = useRouter()
+    if (!isLogin) {
+        router.push('/login')
+    }
 
     const onChange = (event) => {
         const text = event.target.value
-        if (text) {
-            const result = data.filter((item) => {
-                return removeAccents(item.NAME.toLowerCase()).includes(
-                    removeAccents(text.toLowerCase())
-                )
-            })
-            setRenderData(result)
+        if (!text) {
+            return setRenderData([])
+        }
+        if (text === '*') {
+            setRenderData(products)
         } else {
-            setRenderData(data)
+            const handleFilter = () => {
+                const result = products.filter((item) => {
+                    if (item.name) {
+                        return removeAccents(item.name.toLowerCase()).includes(text.toLowerCase())
+                    } else {
+                        return false
+                    }
+                })
+                setRenderData(result)
+            }
+            if (ref.current) {
+                clearTimeout(ref.current)
+            }
+            ref.current = setTimeout(handleFilter, 300)
         }
     }
     return (
@@ -58,27 +76,41 @@ export default function Home() {
                         </tr>
                     </thead>
                     <tbody>
-                        {renderData.map((item, idx) => {
-                            return (
-                                <tr key={idx}>
-                                    <td className='sticky'>
-                                        <div className='min-w-[200px]  whitespace-pre-wrap text-left'>
-                                            {item.NAME}
-                                        </div>
-                                    </td>
-                                    <td>{item.SL1 ? item.SL1 : ''}</td>
-                                    <td>{item.SL2 ? item.SL2 : ''}</td>
-                                    <td>{item.G ? item.G : ''}</td>
-                                    <td>{item.VT1 ? item.VT1 : ''}</td>
-                                    <td>{item.VT2 ? item.VT2 : ''}</td>
-                                    <td>{item.VT3 ? item.VT3 : ''}</td>
-                                    <td>{item.VT4 ? item.VT4 : ''}</td>
-                                </tr>
-                            )
-                        })}
+                        {renderData.length > 0 &&
+                            renderData.map((item, idx) => {
+                                return (
+                                    <tr key={idx}>
+                                        <td className='sticky'>
+                                            <div className='min-w-[200px]  whitespace-pre-wrap text-left'>
+                                                {item.name}
+                                            </div>
+                                        </td>
+                                        <td>{item.sl1 ? item.sl1 : ''}</td>
+                                        <td>{item.sl2 ? item.sl2 : ''}</td>
+                                        <td>{item.g ? item.g : ''}</td>
+                                        <td>{item.vt1 ? item.vt1 : ''}</td>
+                                        <td>{item.vt2 ? item.vt2 : ''}</td>
+                                        <td>{item.vt3 ? item.vt3 : ''}</td>
+                                        <td>{item.vt4 ? item.vt4 : ''}</td>
+                                    </tr>
+                                )
+                            })}
                     </tbody>
                 </table>
+                {renderData.length === 0 && (
+                    <span className='block text-center w-full py-5'>Dữ liệu đã sẵn sàng</span>
+                )}
             </div>
         </div>
     )
+}
+
+export async function getServerSideProps() {
+    const res = await fetch('http://localhost:3000/api/book')
+    const result = await res.json()
+    return {
+        props: {
+            data: result.data,
+        },
+    }
 }

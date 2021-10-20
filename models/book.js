@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const Shema = new mongoose.Schema(
+const Schema = new mongoose.Schema(
     {
         name: { type: String, required: true },
         sl1: { type: Number, default: 0 },
@@ -16,6 +16,4 @@ const Shema = new mongoose.Schema(
     }
 )
 
-const model = mongoose.model('Books') || mongoose.model('Books', Shema)
-
-export default model
+export default mongoose.models.Books || mongoose.model('Books', Schema)

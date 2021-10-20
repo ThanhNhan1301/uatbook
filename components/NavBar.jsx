@@ -4,8 +4,7 @@ import { FaUserAlt } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 
 export default function NavBar() {
-    const { isLogin, current } = useSelector((state) => state.user)
-    const [isShow, setIsShow] = useState(false)
+    //const { isLogin, current } = useSelector((state) => state.userCurrent)
     return (
         <div
             className='
@@ -14,22 +13,21 @@ export default function NavBar() {
                 flex justify-between items-center rounded-bl-sm rounded-br-sm
             '
         >
-            <div className='text-2xl font-semibold uppercase'>
+            <div className='text-2xl font-semibold'>
                 <Link href='/'>uatbook</Link>
             </div>
             <div
                 className='
                 relative
-                
             '
             >
-                {isLogin ? (
+                {/* {isLogin ? (
                     <span>{current}</span>
                 ) : (
                     <div className='p-4 bg-gray-500 rounded-full opacity-90 active:opacity-100'>
                         <FaUserAlt />
                     </div>
-                )}
+                )} */}
             </div>
         </div>
     )
