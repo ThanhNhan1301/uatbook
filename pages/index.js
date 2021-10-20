@@ -1,18 +1,22 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import removeAccents from '../utils/removeAccents'
 import { useRouter } from 'next/dist/client/router'
 import { useSelector } from 'react-redux'
 
 export default function Home(props) {
     const isLogin = useSelector((state) => state.userCurrent.isLogin)
+
     const products = props.data
     const [renderData, setRenderData] = useState([])
     const ref = useRef(null)
 
     const router = useRouter()
-    if (!isLogin) {
-        router.push('/login')
-    }
+
+    useEffect(() => {
+        if (!isLogin) {
+            return router.push('/login')
+        }
+    })
 
     const onChange = (event) => {
         const text = event.target.value
@@ -106,7 +110,12 @@ export default function Home(props) {
 }
 
 export async function getStaticProps() {
-    const res = await fetch('https://uatbook.vercel.app/api/book')
+    const res = await fetch(`${process.env.BASE_URL}/api/book`, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        mode: 'no-cors',
+    })
     const result = await res.json()
     return {
         props: {

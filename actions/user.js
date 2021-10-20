@@ -3,8 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const slice = createSlice({
     name: 'user',
     initialState: {
-        isLogin: true,
-        current: 'huycomma',
+        isLogin: false,
+        current: '',
     },
     reducers: {
         addUser: (state, action) => {
