@@ -9,12 +9,12 @@ export default async function Login(req, res) {
             .find({ name, password })
             .then((response) => {
                 if (response.length > 0) {
-                    res.json({ isLogin: true })
+                    res.json({ isLogin: true, error: null })
                 } else {
-                    res.json({ isLogin: false })
+                    res.json({ isLogin: false, error: 'Username or password does not exist' })
                 }
             })
-            .catch((err) => res.json({ isLogin: false, err }))
+            .catch((err) => res.json({ isLogin: false, error: err }))
     } else {
         res.status(500).json('Internal server error')
     }
