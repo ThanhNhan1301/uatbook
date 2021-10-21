@@ -5,60 +5,28 @@ import { useDispatch } from 'react-redux'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
+import { authorization } from '../callApi/login'
 
 export default function Login() {
     const router = useRouter()
-    const { error } = useSelector((state) => state.userCurrent)
     const dispatch = useDispatch()
-    const [isLoading, setIsLoading] = useState({
-        loading: false,
-        error: null,
-    })
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
     const { register, handleSubmit } = useForm()
-    const onSubmit = ({ name, password }) => {
-        const authoriration = async () => {
-            try {
-                setIsLoading({
-                    ...isLoading,
-                    loading: true,
-                })
-                const res = await fetch(`${process.env.BASE_URL}/api/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    mode: 'no-cors',
-                    body: JSON.stringify({ name, password }),
-                })
-                const result = await res.json()
-                console.log(result)
-                if (result.isLogin) {
-                    setIsLoading({
-                        ...isLoading,
-                        loading: false,
-                    })
-                    dispatch(
-                        addUser({ name: result.name, isLogin: result.isLogin, error: result.error })
-                    )
-                    router.push('/')
-                } else {
-                    setIsLoading({
-                        ...isLoading,
-                        loading: false,
-                    })
-                    dispatch(addUser({ name: '', isLogin: false, error: result.error }))
-                }
-            } catch (error) {
-                setIsLoading({
-                    error,
-                    loading: false,
-                })
-            }
-        }
-        if (!isLoading.loading) {
-            authoriration()
+
+    const onSubmit = async (data) => {
+        setLoading(true)
+        const result = await authorization(data)
+        setLoading(false)
+        if (result.valid) {
+            dispatch(addUser(result))
+            router.push('/')
+        } else {
+            dispatch(addUser({ name: '' }))
+            setError('Username or password is incorrect')
         }
     }
+
     return (
         <div className='m-auto'>
             <div className='mt-10 text-center text-3xl font-semibold text-red-600 uppercase'>
@@ -94,8 +62,9 @@ export default function Login() {
                     <button
                         className='w-full py-2 bg-green-500 rounded-md text-white font-semibold cursor-pointer '
                         type='submit'
+                        disabled={loading}
                     >
-                        {isLoading.loading && (
+                        {loading && (
                             <AiOutlineLoading3Quarters className='inline-block mr-2 animate-spin' />
                         )}
                         <span>Login</span>

@@ -1,4 +1,5 @@
 import { BiEdit, BiTrash } from 'react-icons/bi'
+import { MdAddBox } from 'react-icons/md'
 
 export default function Table({ data }) {
     return (
@@ -24,8 +25,11 @@ export default function Table({ data }) {
                         return (
                             <tr key={idx}>
                                 <td className='sticky'>
-                                    <div className='min-w-[200px] max-w-[60%]  whitespace-pre-wrap text-left'>
-                                        {item.name}
+                                    <div className='min-w-[240px] max-w-[60%]  whitespace-pre-wrap text-left flex justify-between items-center'>
+                                        <div className='flex-1'>{item.name}</div>
+                                        <div className='text-2xl text-green-400 cursor-pointer ml-1 active:text-green-800'>
+                                            <MdAddBox />
+                                        </div>
                                     </div>
                                 </td>
                                 <td>{item.sl1 ? item.sl1 : ''}</td>

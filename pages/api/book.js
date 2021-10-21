@@ -1,9 +1,15 @@
 import model from '../../models/book'
 import connect from '../../utils/connectDB'
+import NextCors from 'nextjs-cors'
 
-export default async function Book({ method }, res) {
+export default async function Book(req, res) {
+    NextCors(req, res, {
+        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+        origin: '*',
+        optionsSuccessStatus: 200,
+    })
     connect()
-    switch (method) {
+    switch (req.method) {
         case 'GET':
             await model
                 .find()

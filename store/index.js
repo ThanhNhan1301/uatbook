@@ -4,7 +4,7 @@ import productsAction from '../actions/products'
 
 const store = configureStore({
     reducer: {
-        userCurrent: userAction,
+        user: userAction,
         products: productsAction,
     },
 })

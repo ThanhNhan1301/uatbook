@@ -6,7 +6,7 @@ import Table from '../components/Table'
 import removeAccents from '../utils/removeAccents'
 
 export default function Home(props) {
-    const isLogin = useSelector((state) => state.userCurrent.isLogin)
+    const isLogin = useSelector((state) => state.user.name)
 
     const products = props.data
     const [renderData, setRenderData] = useState([])
