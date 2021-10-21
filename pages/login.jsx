@@ -87,7 +87,7 @@ export default function Login() {
                         required={true}
                     />
                 </div>
-                <p className='text-center text-red-500 mt-3'>{error}</p>
+                <p className='text-sm font-semibold text-center text-red-500 mt-3'>{error}</p>
                 <div className='mt-6 w-full'>
                     <button
                         className='w-full py-2 bg-green-500 rounded-md text-white font-semibold cursor-pointer '
