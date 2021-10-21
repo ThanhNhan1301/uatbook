@@ -9,7 +9,7 @@ export default async function Login(req, res) {
             .find({ name, password })
             .then((response) => {
                 if (response.length > 0) {
-                    res.json({ isLogin: true, error: null })
+                    res.json({ isLogin: true, error: null, name })
                 } else {
                     res.json({ isLogin: false, error: 'Username or password does not exist' })
                 }

@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux'
 export default function Login() {
     const router = useRouter()
     const { error } = useSelector((state) => state.userCurrent)
-    console.log(error)
     const dispatch = useDispatch()
     const [isLoading, setIsLoading] = useState({
         loading: false,
@@ -32,12 +31,15 @@ export default function Login() {
                     body: JSON.stringify({ name, password }),
                 })
                 const result = await res.json()
+                console.log(result)
                 if (result.isLogin) {
                     setIsLoading({
                         ...isLoading,
                         loading: false,
                     })
-                    dispatch(addUser({ name, isLogin: result.isLogin, error: result.error }))
+                    dispatch(
+                        addUser({ name: result.name, isLogin: result.isLogin, error: result.error })
+                    )
                     router.push('/')
                 } else {
                     setIsLoading({

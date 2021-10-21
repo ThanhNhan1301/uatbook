@@ -10,7 +10,7 @@ const slice = createSlice({
     reducers: {
         addUser: (state, action) => {
             state.isLogin = action.payload.isLogin
-            state.current = action.payload.user
+            state.current = action.payload.name
             state.error = action.payload.error
         },
         removeUser: (state) => {
