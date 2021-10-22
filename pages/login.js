@@ -1,10 +1,9 @@
-import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/dist/client/router'
-import { addUser } from '../actions/user'
-import { useDispatch } from 'react-redux'
+import { useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { addUser } from '../actions/user'
 import { authorization } from '../callApi/login'
 
 export default function Login() {
@@ -14,11 +13,20 @@ export default function Login() {
     const [error, setError] = useState('')
     const { register, handleSubmit } = useForm()
 
+    const local = useRef(null)
+
+    useEffect(() => {
+        local.current = window.localStorage
+    }, [])
+
     const onSubmit = async (data) => {
         setLoading(true)
         const result = await authorization(data)
         setLoading(false)
         if (result.valid) {
+            if (local.current) {
+                local.current.setItem('user', result.name)
+            }
             dispatch(addUser(result))
             router.push('/')
         } else {

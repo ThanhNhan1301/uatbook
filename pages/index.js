@@ -9,9 +9,9 @@ export default function Home(props) {
     useCheckLogin()
 
     const products = props.data
+    const refProducts = useRef(products)
     const [renderData, setRenderData] = useState([])
     const ref = useRef(null)
-
     const onChange = (event) => {
         const text = event.target.value
         if (!text) {
@@ -21,7 +21,8 @@ export default function Home(props) {
             setRenderData(products)
         } else {
             const handleFilter = () => {
-                const result = products.filter((item) => {
+                const p = refProducts.current ? refProducts.current : products
+                const result = p.filter((item) => {
                     if (item.name) {
                         console.log(removeAccents(item.name.toLowerCase()))
                         return removeAccents(item.name.toLowerCase()).includes(
@@ -81,12 +82,7 @@ export default function Home(props) {
 }
 
 export async function getStaticProps() {
-    const res = await fetch(`${process.env.BASE_URL}/api/book`, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        mode: 'no-cors',
-    })
+    const res = await fetch(`${process.env.BASE_URL}/api/book`)
     const result = await res.json()
     return {
         props: {
