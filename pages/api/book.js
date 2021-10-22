@@ -1,13 +1,7 @@
 import model from '../../models/book'
 import connect from '../../utils/connectDB'
-import NextCors from 'nextjs-cors'
 
 export default async function Book(req, res) {
-    NextCors(req, res, {
-        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-        origin: '*',
-        optionsSuccessStatus: 200,
-    })
     connect()
     switch (req.method) {
         case 'GET':
@@ -25,6 +19,13 @@ export default async function Book(req, res) {
                         error,
                     })
                 )
+            break
+        case 'POST':
+            const data = req.body
+            model
+                .create({ ...data })
+                .then((result) => res.json(result))
+                .catch((error) => res.json(error))
             break
         default:
             res.status(500).json({ error: 'Internal server error' })

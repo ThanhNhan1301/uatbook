@@ -1,23 +1,16 @@
-import { useRouter } from 'next/dist/client/router'
-import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import FormSearch from '../components/FormSearch'
+import Link from 'next/link'
+import { useRef, useState } from 'react'
+import TextInput from '../components/Form/TextInput'
 import Table from '../components/Table'
+import useCheckLogin from '../hooks/useCheckLogin'
 import removeAccents from '../utils/removeAccents'
 
 export default function Home(props) {
-    const isLogin = useSelector((state) => state.user.name)
+    useCheckLogin()
 
     const products = props.data
     const [renderData, setRenderData] = useState([])
     const ref = useRef(null)
-    const router = useRouter()
-
-    useEffect(() => {
-        if (!isLogin) {
-            return router.push('/login')
-        }
-    })
 
     const onChange = (event) => {
         const text = event.target.value
@@ -48,7 +41,18 @@ export default function Home(props) {
     }
     return (
         <div className='py-10 px-1'>
-            <FormSearch onChange={onChange} />
+            <div
+                className='
+                w-[400px] text-center mb-8 mt-2 mx-auto
+            '
+            >
+                <TextInput
+                    type='search'
+                    placeholder='Enter text search... &#128540; &#128540; &#128540;'
+                    onChange={onChange}
+                />
+            </div>
+
             {renderData.length === 0 && (
                 <span className='block text-center w-full mb-8 text-blue-700'>
                     Dữ liệu đã sẵn sàng
@@ -57,6 +61,21 @@ export default function Home(props) {
             <div className='overflow-auto scroll_custom'>
                 <Table data={renderData} />
             </div>
+            <Link href='/book/create'>
+                <div
+                    className='
+                    fixed bottom-[30px] right-[30px]
+                    w-[50px] h-[50px] p-2 rounded-full 
+                    bg-green-800 text-white 
+                    text-3xl font-semibold
+                    flex justify-center items-center
+                    cursor-pointer opacity-90
+                    active:opacity-100
+            '
+                >
+                    <span>+</span>
+                </div>
+            </Link>
         </div>
     )
 }

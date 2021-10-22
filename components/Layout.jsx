@@ -6,7 +6,7 @@ import store from '../store'
 export default function Layout({ children }) {
     return (
         <Provider store={store}>
-            <div className='m-auto max-w-7xl w-full'>
+            <div className='m-auto max-w-7xl w-full min-h-screen'>
                 <Head title='Book Store' />
                 <NavBar />
                 {children}
