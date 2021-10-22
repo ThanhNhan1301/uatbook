@@ -16,6 +16,7 @@
     "react-hook-form": "^7.17.4",
     "react-icons": "^4.3.1",
     "react-redux": "^7.2.5",
+    "react-speech-recognition": "^3.9.0",
     "redux": "^4.1.1"
   },
   "devDependencies": {
