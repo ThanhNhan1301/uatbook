@@ -4,8 +4,11 @@ import { useForm } from 'react-hook-form'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
 import { login } from '../axios/callApi/authorization'
+import { getBooks } from '../axios/callApi/book'
+import { addProducts } from '../store/actions/products'
 
 export default function Login() {
+    const dispatch = useDispatch()
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
@@ -25,6 +28,8 @@ export default function Login() {
             if (local.current) {
                 local.current.setItem('user', result.name)
             }
+            const resultData = await getBooks()
+            dispatch(addProducts(resultData.data))
             router.push('/')
         } else {
             setError('Username or password is incorrect')
