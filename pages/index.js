@@ -1,6 +1,7 @@
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
-import { deleteBook, getBooks } from '../axios/callApi/book'
+import { useRef, useState } from 'react'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+import { deleteBook } from '../axios/callApi/book'
 import { search } from '../axios/callApi/search'
 import TextInput from '../components/Form/TextInput'
 import Loading from '../components/Loading'
@@ -11,18 +12,29 @@ export default function Home(props) {
     useCheckLogin()
     const [isLoading, setIsLoading] = useState(false)
     const [renderData, setRenderData] = useState([])
+    const [loadingSearch, setLoadingSearch] = useState(false)
     const debounce = useRef(null)
 
     const onChange = (event) => {
         const handleFilter = async () => {
-            const text = event.target.value
-            const result = await search(text)
-            setRenderData(result.data)
+            try {
+                const text = event.target.value
+                if (!text) {
+                    setRenderData([])
+                } else {
+                    setLoadingSearch(true)
+                    const result = await search(text)
+                    setLoadingSearch(false)
+                    setRenderData(result.data)
+                }
+            } catch {
+                setLoadingSearch(false)
+            }
         }
         if (debounce.current) {
             clearTimeout(debounce.current)
         }
-        debounce.current = setTimeout(handleFilter, 200)
+        debounce.current = setTimeout(handleFilter, 500)
     }
     const handleDeleteItem = async (id, idx) => {
         try {
@@ -43,6 +55,7 @@ export default function Home(props) {
             <div
                 className='
                 w-[400px] text-center mb-8 mt-2 mx-auto
+                relative
             '
             >
                 <TextInput
@@ -50,8 +63,16 @@ export default function Home(props) {
                     placeholder='Enter text search... &#128540; &#128540; &#128540;'
                     onChange={onChange}
                 />
+                {loadingSearch && (
+                    <div className='absolute top-[50%] right-8 translate-y-[-50%] text-green-900'>
+                        <div className='animate-spin text-xl'>
+                            <AiOutlineLoading3Quarters />
+                        </div>
+                    </div>
+                )}
             </div>
-            <div className='overflow-auto scroll_custom'>
+
+            <div className='overflow-auto scroll_custom scroll-none'>
                 <Table data={renderData} handleDeleteItem={handleDeleteItem} />
             </div>
             <Link href='/book/create'>
