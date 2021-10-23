@@ -1,12 +1,7 @@
 import connect from '../../utils/connectDB'
 import model from '../../models/user'
-import Cors from 'nextjs-cors'
 
 export default async function Login(req, res) {
-    Cors(req, res, {
-        methods: ['GET', 'PUT', 'PATH', 'DELETE', 'POST'],
-        origin: '*',
-    })
     await connect()
     if (req.method === 'POST') {
         const { name, password } = req.body

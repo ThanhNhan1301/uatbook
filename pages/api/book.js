@@ -1,13 +1,8 @@
 import model from '../../models/book'
 import connect from '../../utils/connectDB'
-import Cors from 'nextjs-cors'
 
 export default async function Book(req, res) {
     await connect()
-    await Cors(req, res, {
-        methods: ['GET', 'PUT', 'PATH', 'DELETE', 'POST'],
-        origin: '*',
-    })
     switch (req.method) {
         case 'GET':
             await model
