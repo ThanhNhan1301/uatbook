@@ -24,10 +24,9 @@ export default function CreateBook() {
         const postBook = async (value) => {
             try {
                 setLoading(true)
-                const result = await createBook(value).then(async () => {
-                    const resultData = await getBooks()
-                    dispatch(addProducts(resultData.data))
-                })
+                const result = await createBook(value)
+                const resultData = await getBooks()
+                dispatch(addProducts(resultData.data))
 
                 if (result) {
                     setModal({ show: true, title: 'Create Book Successfully', type: 'success' })
