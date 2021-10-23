@@ -74,7 +74,8 @@ export default function Home(props) {
                         </div>
                     </div>
                 )}
-            </div>
+            </div>{' '}
+            <div className='text-center text-yellow-600 italic mb-4'>Data is realy !!!</div>
             {isSearch && (
                 <div className='mb-4 pl-4'>
                     <span>
@@ -86,9 +87,11 @@ export default function Home(props) {
                     </span>
                 </div>
             )}
-            <div className='overflow-auto scroll_custom scroll-none'>
-                <Table data={renderData} handleDeleteItem={handleDeleteItem} />
-            </div>
+            {renderData.length > 0 && (
+                <div className='overflow-auto scroll_custom scroll-none'>
+                    <Table data={renderData} handleDeleteItem={handleDeleteItem} />
+                </div>
+            )}
             <Link href='/book/create'>
                 <div
                     className='
