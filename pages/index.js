@@ -15,7 +15,7 @@ export default function Home() {
     const dispatch = useDispatch()
     const products = useSelector((state) => state.products.data)
     const [isLoading, setIsLoading] = useState(false)
-    const [renderData, setRenderData] = useState(products)
+    const [renderData, setRenderData] = useState([])
 
     const [isSearch, setIsSerch] = useState('')
     const debounce = useRef(null)
@@ -26,7 +26,6 @@ export default function Home() {
                 setIsLoading(true)
                 const resultData = await getBooks()
                 dispatch(addProducts(resultData.data))
-                setRenderData(resultData.data)
                 setIsLoading(false)
             }
         }
@@ -36,13 +35,17 @@ export default function Home() {
     const onChange = (event) => {
         const text = event.target.value
         const handleFilter = () => {
-            if (!text) {
-                setRenderData(products)
-                setIsSerch('')
+            if (text) {
+                if (text === '*') {
+                    setRenderData(products)
+                    setIsSerch(text)
+                } else {
+                    const result = filter(products, text, 'name')
+                    setRenderData(result)
+                    setIsSerch(text)
+                }
             } else {
-                const result = filter(products, text, 'name')
-                setRenderData(result)
-                setIsSerch(text)
+                renderData([])
             }
         }
         if (debounce.current) {
