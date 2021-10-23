@@ -17,28 +17,29 @@ export default function Home(props) {
     const onChange = (event) => {
         const text = event.target.value
         if (!text) {
-            return setRenderData([])
-        }
-        if (text === '*') {
-            setRenderData(products)
+            setRenderData([])
         } else {
-            const handleFilter = () => {
-                const p = refProducts.current ? refProducts.current : products
-                const result = p.filter((item) => {
-                    if (item.name) {
-                        return removeAccents(item.name.toLowerCase()).includes(
-                            removeAccents(text.toLowerCase())
-                        )
-                    } else {
-                        return false
-                    }
-                })
-                setRenderData(result)
+            if (text === '*') {
+                setRenderData(products)
+            } else {
+                const handleFilter = () => {
+                    const p = refProducts.current ? refProducts.current : products
+                    const result = p.filter((item) => {
+                        if (item.name) {
+                            return removeAccents(item.name.toLowerCase()).includes(
+                                removeAccents(text.toLowerCase())
+                            )
+                        } else {
+                            return false
+                        }
+                    })
+                    setRenderData(result)
+                }
+                if (ref.current) {
+                    clearTimeout(ref.current)
+                }
+                ref.current = setTimeout(handleFilter, 300)
             }
-            if (ref.current) {
-                clearTimeout(ref.current)
-            }
-            ref.current = setTimeout(handleFilter, 300)
         }
     }
     const handleDeleteItem = async (id, idx) => {
