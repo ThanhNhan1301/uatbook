@@ -33,6 +33,7 @@ export default function CreateBook() {
                 }
                 setLoading(false)
             } catch (error) {
+                console.log(error)
                 setLoading(false)
                 setModal({ show: true, title: 'Create Book Error', type: 'error' })
             }
