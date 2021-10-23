@@ -2,13 +2,16 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+import { useDispatch } from 'react-redux'
 import { createBook } from '../../axios/callApi/book'
 import TextInput from '../../components/Form/TextInput'
 import Loading from '../../components/Loading'
 import Modal from '../../components/Modal'
 import useCheckLogin from '../../hooks/useCheckLogin'
+import { addProducts } from '../../store/actions/products'
 
 export default function CreateBook() {
+    const dispatch = useDispatch()
     const initialModal = {
         show: false,
         title: '',
@@ -23,6 +26,11 @@ export default function CreateBook() {
             try {
                 setLoading(true)
                 const result = await createBook(value)
+
+                const resultData = await getBooks()
+                dispatch(addProducts(resultData.data))
+                setRenderData(resultData.data)
+
                 if (result) {
                     setModal({ show: true, title: 'Create Book Successfully', type: 'success' })
                 }
