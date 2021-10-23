@@ -9,11 +9,10 @@ import Loading from '../components/Loading'
 
 export default function Home(props) {
     useCheckLogin()
-    const [isLoading, setIsLoading] = useState(false)
     const products = props.data
-    const refProducts = useRef(products)
+    const [isLoading, setIsLoading] = useState(false)
     const [renderData, setRenderData] = useState([])
-    const ref = useRef(null)
+    const debounce = useRef(null)
     const onChange = (event) => {
         const text = event.target.value
         if (!text) {
@@ -23,8 +22,7 @@ export default function Home(props) {
                 setRenderData(products)
             } else {
                 const handleFilter = () => {
-                    const p = refProducts.current ? refProducts.current : products
-                    const result = p.filter((item) => {
+                    const result = products.filter((item) => {
                         if (item.name) {
                             return removeAccents(item.name.toLowerCase()).includes(
                                 removeAccents(text.toLowerCase())
@@ -35,10 +33,10 @@ export default function Home(props) {
                     })
                     setRenderData(result)
                 }
-                if (ref.current) {
-                    clearTimeout(ref.current)
+                if (debounce.current) {
+                    clearTimeout(debounce.current)
                 }
-                ref.current = setTimeout(handleFilter, 300)
+                debounce.current = setTimeout(handleFilter, 300)
             }
         }
     }

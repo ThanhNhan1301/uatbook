@@ -5,15 +5,17 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { createBook } from '../../axios/callApi/book'
 import TextInput from '../../components/Form/TextInput'
 import Loading from '../../components/Loading'
+import Modal from '../../components/Modal'
 import useCheckLogin from '../../hooks/useCheckLogin'
 
 export default function CreateBook() {
-    const [loading, setLoading] = useState(false)
-    const [modal, setModal] = useState({
+    const initialModal = {
         show: false,
         title: '',
         type: 'success',
-    })
+    }
+    const [loading, setLoading] = useState(false)
+    const [modal, setModal] = useState(initialModal)
     useCheckLogin()
     const { register, handleSubmit, reset } = useForm()
     const onSubmit = (value) => {
@@ -27,7 +29,7 @@ export default function CreateBook() {
                 setLoading(false)
             } catch (error) {
                 setLoading(false)
-                setModal({ show: true, title: 'Create Book Successfully', type: 'error' })
+                setModal({ show: true, title: 'Create Book Error', type: 'error' })
             }
         }
         postBook(value)
@@ -44,24 +46,13 @@ export default function CreateBook() {
             </div>
             <h3 className='text-center mt-4 font-semibold text-2xl text-green-900'>CREATE BOOK</h3>
             <div className='w-[90%] m-4 mx-auto max-w-[400px] border rounded-lg p-4'>
-                {modal.show && (
-                    <div
-                        className={`fixed top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] py-3 w-full max-w-[400px] text-white rounded-lg text-center
-                        ${modal.type === 'error' ? 'bg-red-600' : 'bg-yellow-600'}
-                        `}
-                    >
-                        <div className='text-center p-3'>{modal.title}</div>
-                        <button
-                            className='px-8 py-1 bg-black uppercase rounded-md opacity-90 active:opacity-100'
-                            onClick={() => {
-                                reset()
-                                setModal({ show: false, title: '', type: 'success' })
-                            }}
-                        >
-                            Close
-                        </button>
-                    </div>
-                )}
+                <Modal
+                    {...modal}
+                    onClick={() => {
+                        reset()
+                        setModal(initialModal)
+                    }}
+                />
                 <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
                     <div>
                         <TextInput

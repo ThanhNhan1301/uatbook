@@ -7,7 +7,6 @@ import { login } from '../axios/callApi/authorization'
 
 export default function Login() {
     const router = useRouter()
-    const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const { register, handleSubmit } = useForm()
