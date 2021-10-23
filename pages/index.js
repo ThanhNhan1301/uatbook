@@ -13,6 +13,7 @@ export default function Home(props) {
     const [isLoading, setIsLoading] = useState(false)
     const [renderData, setRenderData] = useState([])
     const [loadingSearch, setLoadingSearch] = useState(false)
+    const [isSearch, setIsSerch] = useState('')
     const debounce = useRef(null)
 
     const onChange = (event) => {
@@ -25,10 +26,13 @@ export default function Home(props) {
                     setLoadingSearch(true)
                     const result = await search(text)
                     setLoadingSearch(false)
+                    event.target.value = ''
+                    setIsSerch(text)
                     setRenderData(result.data)
                 }
             } catch {
                 setLoadingSearch(false)
+                event.target.value = ''
             }
         }
         if (debounce.current) {
@@ -54,7 +58,7 @@ export default function Home(props) {
             <Loading show={isLoading} />
             <div
                 className='
-                w-[400px] text-center mb-8 mt-2 mx-auto
+                w-[400px] text-center mb-4 mt-2 mx-auto
                 relative
             '
             >
@@ -71,7 +75,17 @@ export default function Home(props) {
                     </div>
                 )}
             </div>
-
+            {isSearch && (
+                <div className='mb-4 pl-4'>
+                    <span>
+                        Result:{' '}
+                        <span className='pl-1 text-yellow-700 font-semibold'>"{isSearch}"</span> -
+                        Total:{' '}
+                        <span className='text-blue-800 font-semibold'>{renderData.length}</span>{' '}
+                        items
+                    </span>
+                </div>
+            )}
             <div className='overflow-auto scroll_custom scroll-none'>
                 <Table data={renderData} handleDeleteItem={handleDeleteItem} />
             </div>
