@@ -4,10 +4,12 @@ import TextInput from '../components/Form/TextInput'
 import Table from '../components/Table'
 import useCheckLogin from '../hooks/useCheckLogin'
 import removeAccents from '../utils/removeAccents'
+import { deleteBook, getBooks } from '../axios/callApi/book'
+import Loading from '../components/Loading'
 
 export default function Home(props) {
     useCheckLogin()
-
+    const [isLoading, setIsLoading] = useState(false)
     const products = props.data
     const refProducts = useRef(products)
     const [renderData, setRenderData] = useState([])
@@ -24,7 +26,6 @@ export default function Home(props) {
                 const p = refProducts.current ? refProducts.current : products
                 const result = p.filter((item) => {
                     if (item.name) {
-                        console.log(removeAccents(item.name.toLowerCase()))
                         return removeAccents(item.name.toLowerCase()).includes(
                             removeAccents(text.toLowerCase())
                         )
@@ -40,8 +41,24 @@ export default function Home(props) {
             ref.current = setTimeout(handleFilter, 300)
         }
     }
+    const handleDeleteItem = async (id, idx) => {
+        try {
+            setIsLoading(true)
+            await deleteBook(id)
+            const responce = await getBooks()
+            refProducts.current = responce.data
+            const newDataRender = [...renderData]
+            newDataRender.splice(idx, 1)
+            setRenderData(newDataRender)
+            setIsLoading(false)
+        } catch (error) {
+            setIsLoading(false)
+            return
+        }
+    }
     return (
         <div className='py-10 px-1'>
+            <Loading show={isLoading} />
             <div
                 className='
                 w-[400px] text-center mb-8 mt-2 mx-auto
@@ -60,7 +77,7 @@ export default function Home(props) {
                 </span>
             )}
             <div className='overflow-auto scroll_custom'>
-                <Table data={renderData} />
+                <Table data={renderData} handleDeleteItem={handleDeleteItem} />
             </div>
             <Link href='/book/create'>
                 <div
@@ -82,11 +99,10 @@ export default function Home(props) {
 }
 
 export async function getStaticProps() {
-    const res = await fetch(`${process.env.BASE_URL}/api/book`)
-    const result = await res.json()
+    const res = await getBooks()
     return {
         props: {
-            data: result.data,
+            data: res.data,
         },
     }
 }

@@ -1,15 +1,17 @@
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FaUserAlt } from 'react-icons/fa'
 import { FiShoppingCart } from 'react-icons/fi'
-import { useDispatch } from 'react-redux'
-import { useSelector } from 'react-redux'
-import { addUser } from '../actions/user'
+import { useRouter } from 'next/dist/client/router'
 
 export default function NavBar() {
-    const { name } = useSelector((state) => state.user)
     const [isShow, setIsShow] = useState(false)
-    const dispatch = useDispatch()
+    const refLocal = useRef(null)
+    const router = useRouter()
+    useEffect(() => {
+        refLocal.current = window.localStorage
+    }, [])
+
     return (
         <div
             className='
@@ -27,7 +29,7 @@ export default function NavBar() {
             '
             >
                 <div className='flex justify-between items-center'>
-                    {name && (
+                    {refLocal.current && refLocal.current.getItem('user') && (
                         <div className='text-center relative'>
                             <div
                                 className='
@@ -36,14 +38,15 @@ export default function NavBar() {
                                 onClick={() => setIsShow(!isShow)}
                             >
                                 <FaUserAlt />
-                                <span className='text-sm'>{name}</span>
+                                <span className='text-sm'>{refLocal.current.getItem('user')}</span>
                             </div>
                             {isShow && (
                                 <div
                                     className='absolute bottom-[-100%] bg-gray-400 px-3 py-1 transition-all rounded-md cursor-pointer hover:bg-green-500'
                                     onClick={() => {
+                                        refLocal.current.removeItem('user')
                                         setIsShow(!isShow)
-                                        dispatch(addUser({ name: '' }))
+                                        router.push('/login')
                                     }}
                                 >
                                     <span>Logout</span>

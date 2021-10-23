@@ -14,7 +14,7 @@ export default function TextInput({
 }) {
     const registerInput = register ? register(name, { options }) : {}
     return (
-        <div className='w-full my-3'>
+        <div className='w-full my-2'>
             {title && <div className='mb-1 font-semibold text-green-900'>{title}</div>}
             <input
                 autoComplete={autoComplete && autoComplete}

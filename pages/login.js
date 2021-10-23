@@ -3,8 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
-import { addUser } from '../actions/user'
-import { authorization } from '../callApi/login'
+import { login } from '../axios/callApi/authorization'
 
 export default function Login() {
     const router = useRouter()
@@ -21,16 +20,14 @@ export default function Login() {
 
     const onSubmit = async (data) => {
         setLoading(true)
-        const result = await authorization(data)
+        const result = await login(data)
         setLoading(false)
         if (result.valid) {
             if (local.current) {
                 local.current.setItem('user', result.name)
             }
-            dispatch(addUser(result))
             router.push('/')
         } else {
-            dispatch(addUser({ name: '' }))
             setError('Username or password is incorrect')
         }
     }

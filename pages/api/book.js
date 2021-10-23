@@ -1,8 +1,13 @@
 import model from '../../models/book'
 import connect from '../../utils/connectDB'
+import Cors from 'nextjs-cors'
 
 export default async function Book(req, res) {
-    connect()
+    await connect()
+    await Cors(req, res, {
+        methods: ['GET', 'PUT', 'PATH', 'DELETE', 'POST'],
+        origin: '*',
+    })
     switch (req.method) {
         case 'GET':
             await model
@@ -26,6 +31,22 @@ export default async function Book(req, res) {
                 .create({ ...data })
                 .then((result) => res.json(result))
                 .catch((error) => res.json(error))
+            break
+        case 'DELETE':
+            try {
+                const { id } = req.query
+                if (id) {
+                    const result = await model.deleteOne({ _id: id })
+                    res.json({ result, error: null })
+                } else {
+                    throw 'Not value id in pramas'
+                }
+            } catch (error) {
+                res.json({
+                    result: null,
+                    error: error,
+                })
+            }
             break
         default:
             res.status(500).json({ error: 'Internal server error' })

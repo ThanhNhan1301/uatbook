@@ -1,7 +1,7 @@
 import { BiEdit, BiTrash } from 'react-icons/bi'
 import { MdAddBox } from 'react-icons/md'
 
-export default function Table({ data }) {
+export default function Table({ data, handleDeleteItem }) {
     return (
         <table className='w-full text-sm'>
             <thead>
@@ -47,7 +47,11 @@ export default function Table({ data }) {
                                         >
                                             <BiEdit />
                                         </div>
-                                        <div className='text-red-700 cursor-pointer' title='Delete'>
+                                        <div
+                                            className='text-red-700 cursor-pointer'
+                                            title='Delete'
+                                            onClick={() => handleDeleteItem(item._id, idx)}
+                                        >
                                             <BiTrash />
                                         </div>
                                     </div>

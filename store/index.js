@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
-import userAction from '../actions/user'
-import productsAction from '../actions/products'
+import userAction from './actions/user'
+import productsAction from './actions/products'
 
 const store = configureStore({
     reducer: {
