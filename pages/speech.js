@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 export default function Speech() {
     const [recognition, setRecognition] = useState()
+    const [transcript, setTranscript] = useState('')
     useEffect(() => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
         const recognition = new SpeechRecognition()
@@ -18,7 +19,7 @@ export default function Speech() {
             console.log(err)
         }
         recognition.onresult = (event) => {
-            console.log(event)
+            setTranscript(event.results[0][0].transcript)
         }
     }
     return (
@@ -29,6 +30,7 @@ export default function Speech() {
             >
                 Listen
             </button>
+            <span>Result: {transcript} </span>
         </div>
     )
 }
