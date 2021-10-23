@@ -1,51 +1,33 @@
 import Link from 'next/link'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { deleteBook, getBooks } from '../axios/callApi/book'
+import { search } from '../axios/callApi/search'
 import TextInput from '../components/Form/TextInput'
+import Loading from '../components/Loading'
 import Table from '../components/Table'
 import useCheckLogin from '../hooks/useCheckLogin'
-import removeAccents from '../utils/removeAccents'
-import { deleteBook, getBooks } from '../axios/callApi/book'
-import Loading from '../components/Loading'
 
 export default function Home(props) {
     useCheckLogin()
-    const products = props.data
     const [isLoading, setIsLoading] = useState(false)
     const [renderData, setRenderData] = useState([])
     const debounce = useRef(null)
+
     const onChange = (event) => {
-        const text = event.target.value
-        if (!text) {
-            setRenderData([])
-        } else {
-            if (text === '*') {
-                setRenderData(products)
-            } else {
-                const handleFilter = () => {
-                    const result = products.filter((item) => {
-                        if (item.name) {
-                            return removeAccents(item.name.toLowerCase()).includes(
-                                removeAccents(text.toLowerCase())
-                            )
-                        } else {
-                            return false
-                        }
-                    })
-                    setRenderData(result)
-                }
-                if (debounce.current) {
-                    clearTimeout(debounce.current)
-                }
-                debounce.current = setTimeout(handleFilter, 300)
-            }
+        const handleFilter = async () => {
+            const text = event.target.value
+            const result = await search(text)
+            setRenderData(result.data)
         }
+        if (debounce.current) {
+            clearTimeout(debounce.current)
+        }
+        debounce.current = setTimeout(handleFilter, 200)
     }
     const handleDeleteItem = async (id, idx) => {
         try {
             setIsLoading(true)
             await deleteBook(id)
-            const responce = await getBooks()
-            refProducts.current = responce.data
             const newDataRender = [...renderData]
             newDataRender.splice(idx, 1)
             setRenderData(newDataRender)
@@ -69,12 +51,6 @@ export default function Home(props) {
                     onChange={onChange}
                 />
             </div>
-
-            {renderData.length === 0 && (
-                <span className='block text-center w-full mb-8 text-blue-700'>
-                    Dữ liệu đã sẵn sàng
-                </span>
-            )}
             <div className='overflow-auto scroll_custom'>
                 <Table data={renderData} handleDeleteItem={handleDeleteItem} />
             </div>
@@ -95,13 +71,4 @@ export default function Home(props) {
             </Link>
         </div>
     )
-}
-
-export async function getStaticProps() {
-    const res = await getBooks()
-    return {
-        props: {
-            data: res.data,
-        },
-    }
 }
