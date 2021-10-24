@@ -1,7 +1,9 @@
+import { useRouter } from 'next/dist/client/router'
 import { BiEdit, BiTrash } from 'react-icons/bi'
 import { MdAddBox } from 'react-icons/md'
 
 export default function Table({ data, handleDeleteItem }) {
+    const router = useRouter()
     return (
         <table className='w-full text-sm'>
             <thead>
@@ -44,6 +46,7 @@ export default function Table({ data, handleDeleteItem }) {
                                         <div
                                             className='mr-4 text-blue-900 cursor-pointer'
                                             title='Edit'
+                                            onClick={() => router.push(`/book/update/${item._id}`)}
                                         >
                                             <BiEdit />
                                         </div>

@@ -1,24 +1,42 @@
+import NextCors from 'nextjs-cors'
 import model from '../../models/book'
 import connect from '../../utils/connectDB'
 
 export default async function Book(req, res) {
+    NextCors(req, res, {
+        // Options
+        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+        origin: '*',
+        optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    })
     await connect()
     switch (req.method) {
         case 'GET':
+            const query = req.query
+
             await model
-                .find()
+                .find(query)
                 .then((result) => {
                     res.json({
                         data: result,
                         error: null,
                     })
+                    console.log(result)
                 })
                 .catch((error) =>
-                    console.log({
+                    res.json({
                         data: null,
                         error,
                     })
                 )
+            break
+        case 'PUT':
+            const { id } = req.body
+            const dataPut = req.body.data
+            await model
+                .findByIdAndUpdate({ _id: id }, dataPut)
+                .then((result) => res.json({ result }))
+                .catch((err) => console.log(err))
             break
         case 'POST':
             const data = req.body

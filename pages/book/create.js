@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
+import { async } from 'regenerator-runtime'
 import { createBook, getBooks } from '../../axios/callApi/book'
 import TextInput from '../../components/Form/TextInput'
 import Loading from '../../components/Loading'
@@ -22,21 +23,19 @@ export default function CreateBook() {
     const { register, handleSubmit, reset } = useForm()
     const onSubmit = (value) => {
         const postBook = async (value) => {
-            try {
-                setLoading(true)
-                const result = await createBook(value)
-                const resultData = await getBooks()
-                dispatch(addProducts(resultData.data))
-
-                if (result) {
-                    setModal({ show: true, title: 'Create Book Successfully', type: 'success' })
-                }
-                setLoading(false)
-            } catch (error) {
-                console.log(error)
-                setLoading(false)
-                setModal({ show: true, title: 'Create Book Error', type: 'error' })
-            }
+            setLoading(true)
+            await createBook(value)
+                .then(async () => {
+                    await getBooks().then((result) => {
+                        dispatch(addProducts(result.data))
+                        setModal({ show: true, title: 'Create Book Successfully', type: 'success' })
+                        setLoading(false)
+                    })
+                })
+                .catch(() => {
+                    setLoading(false)
+                    setModal({ show: true, title: 'Create Book Error', type: 'error' })
+                })
         }
         postBook(value)
     }

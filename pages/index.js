@@ -1,21 +1,28 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { deleteBook } from '../axios/callApi/book'
+import { async } from 'regenerator-runtime'
+import { deleteBook, getBooks } from '../axios/callApi/book'
 import TextInput from '../components/Form/TextInput'
 import Loading from '../components/Loading'
 import Table from '../components/Table'
 import useCheckLogin from '../hooks/useCheckLogin'
 import { addProducts } from '../store/actions/products'
 import filter from '../utils/filter'
-import { getBooks } from '../axios/callApi/book'
+import Modal from '../components/Modal'
 
 export default function Home() {
     useCheckLogin()
+    const initialStateModdal = {
+        show: false,
+        type: 'warning',
+        title: '',
+    }
     const dispatch = useDispatch()
     const products = useSelector((state) => state.products.data)
     const [isLoading, setIsLoading] = useState(false)
     const [renderData, setRenderData] = useState([])
+    const [modal, setModal] = useState(initialStateModdal)
 
     const [isSearch, setIsSerch] = useState('')
     const debounce = useRef(null)
@@ -45,7 +52,7 @@ export default function Home() {
                     setIsSerch(text)
                 }
             } else {
-                renderData([])
+                setRenderData([])
             }
         }
         if (debounce.current) {
@@ -54,26 +61,35 @@ export default function Home() {
         debounce.current = setTimeout(handleFilter, 500)
     }
     const handleDeleteItem = async (id, idx) => {
-        try {
-            setIsLoading(true)
-            await deleteBook(id)
-
-            const resultData = await getBooks()
-            dispatch(addProducts(resultData.data))
-            setRenderData(resultData.data)
-
-            const newDataRender = [...renderData]
-            newDataRender.splice(idx, 1)
-            setRenderData(newDataRender)
-            setIsLoading(false)
-        } catch (error) {
-            setIsLoading(false)
-            return
-        }
+        setIsLoading(true)
+        await deleteBook(id)
+            .then(async () => {
+                await getBooks().then((result) => {
+                    dispatch(addProducts(result.data))
+                    setRenderData(result.data)
+                })
+            })
+            .then(() => {
+                const newDataRender = [...renderData]
+                newDataRender.splice(idx, 1)
+                setRenderData(newDataRender)
+                setIsLoading(false)
+            })
+            .catch(() => {
+                setIsLoading(false)
+                return
+            })
     }
     return (
         <div className='py-10 px-1'>
             <Loading show={isLoading} />
+            <Modal
+                {...modal}
+                onClick={() => {
+                    setModal(initialStateModdal)
+                    handleDeleteItem()
+                }}
+            />
             <div
                 className='
                 w-[400px] text-center mb-4 mt-2 mx-auto
@@ -103,7 +119,17 @@ export default function Home() {
             )}
             {renderData.length > 0 && (
                 <div className='overflow-auto scroll_custom scroll-none'>
-                    <Table data={renderData} handleDeleteItem={handleDeleteItem} />
+                    <Table
+                        data={renderData}
+                        handleDeleteItem={() =>
+                            setModal({
+                                ...modal,
+                                show: true,
+                                title: 'DELETE BOOK',
+                                body: 'Are you sure with your actions. This may cause data loss',
+                            })
+                        }
+                    />
                 </div>
             )}
             <Link href='/book/create'>

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { getBooks } from '../../axios/callApi/book'
 
 const slice = createSlice({
     name: 'products',
