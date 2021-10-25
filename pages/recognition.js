@@ -22,7 +22,7 @@ const Dictaphone = () => {
                 onMouseDown={startListening}
                 onTouchEnd={SpeechRecognition.stopListening}
                 onMouseUp={SpeechRecognition.stopListening}
-                className='mt-3 py-1 px-4 bg-blue-600 text-white uppercase font-semibold'
+                className='mt-3 py-1 px-4 bg-blue-600 text-white uppercase font-semibold select-none'
             >
                 Hold to talk
             </button>
