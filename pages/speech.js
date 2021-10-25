@@ -8,7 +8,12 @@ SpeechRecognition.applyPolyfill(SpeechlySpeechRecognition)
 
 const Dictaphone = () => {
     const { transcript, listening, browserSupportsSpeechRecognition } = useSpeechRecognition()
-    const startListening = () => SpeechRecognition.startListening({ continuous: true })
+    const startListening = () =>
+        SpeechRecognition.startListening({
+            continuous: false,
+            interResults: true,
+            language: 'vi-VI',
+        })
 
     if (!browserSupportsSpeechRecognition) {
         return <span>Browser doesn't support speech recognition.</span>
