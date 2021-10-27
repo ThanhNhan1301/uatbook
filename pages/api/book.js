@@ -21,7 +21,6 @@ export default async function Book(req, res) {
                         data: result,
                         error: null,
                     })
-                    console.log(result)
                 })
                 .catch((error) =>
                     res.json({

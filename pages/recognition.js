@@ -7,7 +7,7 @@ const Dictaphone = () => {
         SpeechRecognition.startListening({
             continuous: false,
             interResults: true,
-            language: 'vi-VN',
+            language: 'vi-VI',
         })
 
     if (!browserSupportsSpeechRecognition) {

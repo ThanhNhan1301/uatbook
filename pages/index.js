@@ -1,15 +1,15 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { async } from 'regenerator-runtime'
 import { deleteBook, getBooks } from '../axios/callApi/book'
+import AddCart from '../components/AddCart'
 import TextInput from '../components/Form/TextInput'
 import Loading from '../components/Loading'
+import Modal from '../components/Modal'
 import Table from '../components/Table'
 import useCheckLogin from '../hooks/useCheckLogin'
 import { addProducts } from '../store/actions/products'
 import filter from '../utils/filter'
-import Modal from '../components/Modal'
 
 export default function Home() {
     useCheckLogin()
@@ -23,6 +23,7 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(false)
     const [renderData, setRenderData] = useState([])
     const [modal, setModal] = useState(initialStateModdal)
+    const [showActions, setShowActions] = useState(false)
 
     const [isSearch, setIsSerch] = useState('')
     const debounce = useRef(null)
@@ -132,21 +133,40 @@ export default function Home() {
                     />
                 </div>
             )}
-            <Link href='/book/create'>
-                <div
-                    className='
+
+            <div
+                className='
                     fixed bottom-[30px] right-[30px]
-                    w-[50px] h-[50px] p-2 rounded-full 
+                '
+            >
+                <div
+                    className='w-[40px] h-[40px] rounded-full 
                     bg-green-800 text-white 
-                    text-3xl font-semibold
+                    text-xl font-semibold
                     flex justify-center items-center
                     cursor-pointer opacity-90
-                    active:opacity-100
-            '
+                    active:opacity-100'
+                    onClick={() => setShowActions(!showActions)}
                 >
-                    <span>+</span>
+                    +
                 </div>
-            </Link>
+                <div
+                    className={`absolute bottom-[calc(120%)] right-0 rounded-md transition-all ${
+                        showActions ? 'scale-100' : 'scale-0'
+                    }`}
+                >
+                    <Link href='/book/create'>
+                        <div className='rounded-md p-2 mb-1 last:mb-0 bg-gray-300 text-gray-800 hover:bg-yellow-600 hover:text-white cursor-pointer text-center'>
+                            Create
+                        </div>
+                    </Link>
+                    <Link href='/orders'>
+                        <div className='rounded-md p-2 mb-1 last:mb-0 bg-gray-300 text-gray-800 hover:bg-yellow-600 hover:text-white cursor-pointer text-center'>
+                            Orders
+                        </div>
+                    </Link>
+                </div>
+            </div>
         </div>
     )
 }
