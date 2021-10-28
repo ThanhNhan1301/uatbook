@@ -103,7 +103,9 @@ export default function Home() {
                     onChange={onChange}
                 />
             </div>
-            <div className='text-center text-yellow-600 italic mb-4'>Data is realy !!!</div>
+            <div className='text-center text-yellow-600 italic mb-4'>
+                {products.length > 0 ? 'Data is realy !!!' : 'Loading...'}
+            </div>
             {isSearch && (
                 <div className='mb-4 pl-4'>
                     <span>

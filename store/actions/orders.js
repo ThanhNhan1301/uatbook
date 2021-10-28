@@ -14,53 +14,62 @@ const slice = createSlice({
         createOrder: (state, action) => {
             const { title, id } = action.payload
             if (state.length === 0) {
-                state.push({ title, data: [], status: 'active', id })
+                return (state = [{ title, data: [], status: 'active', id }])
             } else {
-                const isValid = state.every((item) => {
+                const isValid = state.some((item) => {
                     return item.title.toLowerCase() === title.toLowerCase()
                 })
                 if (isValid) return
                 state.push({ title, data: [], status: 'active', id })
             }
         },
-        addOrder: (state, action) => {
-            const { data, idx, order, type } = action.payload
-            if ((data && order && idx === 0) || (idx && order && data)) {
-                if (order.data.length === 0) {
-                    const newOrder = { ...order, data: [{ ...data, qty: 1 }] }
-                    state.splice(idx, 1, newOrder)
+        updateOrder: (state, action) => {
+            let { indexOrder, itemData, type } = action.payload
+            if ((indexOrder && itemData) || (indexOrder === 0 && itemData)) {
+                const order = { ...state[indexOrder] }
+                let listData = order.data
+                if (listData.length === 0) {
+                    listData = [{ ...itemData, qty: 1 }]
                 } else {
-                    let flag = null
-                    order.data.some((item, idx) => {
-                        item._id == data._id ? (flag = idx + 1) : false
-                        return item._id == data._id
+                    let flag = false
+                    listData.some((data, idx) => {
+                        if (data._id === itemData._id) {
+                            flag = idx + 1
+                        }
+                        return data._id === itemData._id
                     })
                     if (flag) {
-                        let newOrder = { ...order }
-                        const listData = [...newOrder.data]
-                        const newItem = { ...listData[flag - 1] }
-                        if (type === '+') {
-                            newItem.qty += 1
+                        if (!type || !Boolean(type.trim())) {
+                            listData[flag - 1].qty = 1
                         } else {
-                            newItem.qty -= 1
+                            if (Number.isInteger(Number.parseInt(type))) {
+                                listData[flag - 1].qty = Number.parseInt(type)
+                            } else {
+                                switch (type) {
+                                    case '+':
+                                        listData[flag - 1].qty += 1
+                                        break
+                                    case '-':
+                                        if (listData[flag - 1].qty - 1 === 0) {
+                                            listData.splice(flag - 1, 1)
+                                        } else {
+                                            listData[flag - 1].qty -= 1
+                                        }
+                                        break
+                                    default:
+                                        listData[flag - 1].qty += 1
+                                        break
+                                }
+                            }
                         }
-                        if (newItem.qty === 0) {
-                            listData.splice(flag - 1, 1)
-                        } else {
-                            listData.splice(flag - 1, 1, newItem)
-                        }
-                        newOrder.data = listData
-                        state.splice(idx, 1, newOrder)
                     } else {
-                        const newOrder = {
-                            ...order,
-                            data: [...order.data, { ...data, qty: 1 }],
-                        }
-                        state.splice(idx, 1, newOrder)
+                        listData.push({ ...itemData, qty: 1 })
                     }
                 }
+                state[indexOrder].data = listData
             }
         },
+
         deleteOrder: (state, action) => {
             state.splice(action.payload, 1)
         },
@@ -71,6 +80,6 @@ const slice = createSlice({
     },
 })
 
-export const { createOrder, addOrder, deleteOrder, deleteItemOrder } = slice.actions
+export const { createOrder, updateOrder, deleteOrder, deleteItemOrder } = slice.actions
 
 export default slice.reducer

@@ -3,20 +3,15 @@ import { useState } from 'react'
 import { BiEdit, BiTrash } from 'react-icons/bi'
 import { MdAddBox } from 'react-icons/md'
 import AddCart from './AddCart'
-import { useDispatch, useSelector } from 'react-redux'
-import { addOrder } from '../store/actions/orders'
 
 export default function Table({ data, handleDeleteItem }) {
-    const dispatch = useDispatch()
     const [showOrder, setShowOrder] = useState(false)
     const [itemSelected, setItemSelected] = useState({})
     const router = useRouter()
-    const handleAddItem = (idx, order, type) => {
-        dispatch(addOrder({ idx, order, data: itemSelected, type }))
-    }
+
     return (
         <div>
-            <AddCart show={showOrder} stateOrder={setShowOrder} handleAddItem={handleAddItem} />
+            <AddCart show={showOrder} stateOrder={setShowOrder} itemSelected={itemSelected} />
             <table className='w-full text-sm'>
                 <thead>
                     <tr className='sticky top-0'>

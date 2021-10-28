@@ -8,6 +8,14 @@ export default async function Search(req, res) {
 
     switch (req.method) {
         case 'GET':
+            await modelOrder
+                .find()
+                .sort([['createdAt', 'desc']])
+                .then((result) => res.json({ data: result, status: 200 }))
+                .catch((err) => {
+                    console.log(err)
+                    res.json({ data: [], status: 400 })
+                })
             break
         case 'POST':
             const data = req.body
