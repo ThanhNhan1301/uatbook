@@ -42,7 +42,7 @@ export default async function Book(req, res) {
             model
                 .create({ ...data })
                 .then((result) => res.json(result))
-                .catch((error) => res.json(error))
+                .catch((error) => res.json(error.message))
             break
         case 'DELETE':
             try {

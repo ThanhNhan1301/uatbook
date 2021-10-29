@@ -1,17 +1,20 @@
 import Link from 'next/link'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { FaTimes } from 'react-icons/fa'
 import { useDispatch } from 'react-redux'
-import { async } from 'regenerator-runtime'
 import { createBook, getBooks } from '../../axios/callApi/book'
 import TextInput from '../../components/Form/TextInput'
 import Loading from '../../components/Loading'
 import Modal from '../../components/Modal'
 import useCheckLogin from '../../hooks/useCheckLogin'
 import { addProducts } from '../../store/actions/products'
+import createBookUtil from '../../utils/createBookUtils'
+import ReadFileExcel from '../../utils/readFileExcel'
 
 export default function CreateBook() {
     const dispatch = useDispatch()
+    const refChooseFile = useRef()
     const initialModal = {
         show: false,
         title: '',
@@ -19,23 +22,66 @@ export default function CreateBook() {
     }
     const [loading, setLoading] = useState(false)
     const [modal, setModal] = useState(initialModal)
+    const [disabled, setDisabled] = useState(false)
+    const [errChangefile, setErrorChangeFile] = useState(false)
     useCheckLogin()
     const { register, handleSubmit, reset } = useForm()
+    const handleOnChangeFile = (e) => {
+        const fileChoose = e.target.files[0]
+        if (fileChoose) {
+            const listEx = ['xls', 'xlsx']
+            const ex = fileChoose.name ? fileChoose.name.split('.')[1] : 'no-ex'
+            if (listEx.includes(ex)) {
+                setDisabled(true)
+                setErrorChangeFile(false)
+            } else {
+                setDisabled(true)
+                setErrorChangeFile(true)
+            }
+        }
+    }
     const onSubmit = (value) => {
         const postBook = async (value) => {
-            setLoading(true)
-            await createBook(value)
-                .then(async () => {
-                    await getBooks().then((result) => {
-                        dispatch(addProducts(result.data))
-                        setModal({ show: true, title: 'Create Book Successfully', type: 'success' })
+            if (disabled) {
+                const fileReader = refChooseFile.current.files[0]
+                if (fileReader) {
+                    setLoading(true)
+                    try {
+                        const data = await ReadFileExcel(fileReader)
+                        createBookUtil(data)
+                        await getBooks().then((result) => {
+                            dispatch(addProducts(result.data))
+                            setModal({
+                                show: true,
+                                title: 'Create Book Successfully',
+                                type: 'success',
+                            })
+                            setLoading(false)
+                        })
+                    } catch (error) {
                         setLoading(false)
+                        setModal({ show: true, title: 'Create Book Error', type: 'error' })
+                    }
+                }
+            } else {
+                setLoading(true)
+                await createBook(value)
+                    .then(async () => {
+                        await getBooks().then((result) => {
+                            dispatch(addProducts(result.data))
+                            setModal({
+                                show: true,
+                                title: 'Create Book Successfully',
+                                type: 'success',
+                            })
+                            setLoading(false)
+                        })
                     })
-                })
-                .catch(() => {
-                    setLoading(false)
-                    setModal({ show: true, title: 'Create Book Error', type: 'error' })
-                })
+                    .catch(() => {
+                        setLoading(false)
+                        setModal({ show: true, title: 'Create Book Error', type: 'error' })
+                    })
+            }
         }
         postBook(value)
     }
@@ -50,14 +96,39 @@ export default function CreateBook() {
                 </Link>
             </div>
             <h3 className='text-center mt-4 font-semibold text-2xl text-green-900'>CREATE BOOK</h3>
-            <div className='w-[90%] m-4 mx-auto max-w-[400px] border rounded-lg p-4'>
+            <div className='w-[90%] m-4 mx-auto max-w-[400px] border rounded-lg p-4 shadow-md bg-gray-100'>
                 <Modal
                     {...modal}
                     onClick={() => {
+                        refChooseFile.current.value = ''
+                        setDisabled(false)
                         reset()
                         setModal(initialModal)
                     }}
                 />
+                <div className='text-center mt-2 mb-4 relative'>
+                    <input
+                        ref={refChooseFile}
+                        className='outline-none bg-white px-2 py-1 border border-green-500 rounded-md shadow-md'
+                        type='file'
+                        onChange={handleOnChangeFile}
+                    />
+                    {disabled && (
+                        <div
+                            className='absolute top-[50%] right-3 translate-y-[-50%] text-red-600 cursor-pointer'
+                            onClick={() => {
+                                setErrorChangeFile(false)
+                                setDisabled(false)
+                                refChooseFile.current.value = ''
+                            }}
+                        >
+                            <FaTimes />
+                        </div>
+                    )}
+                </div>
+                {errChangefile && (
+                    <div className='text-center text-red-500'>The selected file is not valid</div>
+                )}
                 <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
                     <div>
                         <TextInput
@@ -68,6 +139,7 @@ export default function CreateBook() {
                             name='name'
                             type='text'
                             required={true}
+                            disabled={disabled}
                         />
                         <div className='grid gap-4 grid-cols-2'>
                             <TextInput
@@ -77,6 +149,7 @@ export default function CreateBook() {
                                 name='sl1'
                                 type='number'
                                 defaultValue={0}
+                                disabled={disabled}
                             />
                             <TextInput
                                 autoComplete='off'
@@ -85,6 +158,7 @@ export default function CreateBook() {
                                 name='sl2'
                                 type='number'
                                 defaultValue={0}
+                                disabled={disabled}
                             />
                         </div>
                         <div className='grid gap-4 grid-cols-2'>
@@ -94,6 +168,7 @@ export default function CreateBook() {
                                 register={register}
                                 name='vt1'
                                 type='text'
+                                disabled={disabled}
                             />
                             <TextInput
                                 autoComplete='off'
@@ -101,6 +176,7 @@ export default function CreateBook() {
                                 register={register}
                                 name='vt2'
                                 type='text'
+                                disabled={disabled}
                             />
                         </div>
 
@@ -111,6 +187,7 @@ export default function CreateBook() {
                                 register={register}
                                 name='vt3'
                                 type='text'
+                                disabled={disabled}
                             />
                             <TextInput
                                 autoComplete='off'
@@ -118,6 +195,7 @@ export default function CreateBook() {
                                 register={register}
                                 name='vt4'
                                 type='text'
+                                disabled={disabled}
                             />
                         </div>
 
@@ -128,6 +206,7 @@ export default function CreateBook() {
                             name='g'
                             type='number'
                             defaultValue={0}
+                            disabled={disabled}
                         />
                     </div>
                     <div className='mt-8'>
