@@ -15,10 +15,10 @@ export default function ReadExel() {
             </h3>
             <div className='text-center mt-7'>
                 <input
-                    className='outline-none px-2 py-1 border border-gray-300 rounded-md'
+                    className='outline-none bg-transparent px-2 py-1 border border-gray-300 rounded-md'
                     type='date'
                     onChange={handleOnChange}
-                    placeholder='Choose Date'
+                    // placeholder='Choose Date'
                 />
             </div>
         </div>
