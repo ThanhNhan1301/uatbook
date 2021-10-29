@@ -19,7 +19,7 @@ export default function ReadExel() {
                     type='date'
                     name='date-input'
                     onChange={handleOnChange}
-                    // placeholder='Choose Date'
+                    placeholder='dd/mm/yyyy'
                 />
             </div>
         </div>
