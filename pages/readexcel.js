@@ -1,10 +1,4 @@
-import readExcel from 'read-excel-file'
-
-import { FaBars } from 'react-icons/fa'
-import { useRef } from 'react'
-
 export default function ReadExel() {
-    const refInput = useRef()
     const handleOnChange = (e) => {
         console.log(e.target.value)
     }
@@ -15,7 +9,7 @@ export default function ReadExel() {
             </h3>
             <div className='text-center mt-7'>
                 <input
-                    className='outline-none bg-transparent px-2 py-1 border border-gray-300 rounded-md'
+                    className='outline-none bg-transparent px-2 py-1 border border-gray-300 rounded-md shadow-md'
                     type='date'
                     name='date-input'
                     onChange={handleOnChange}

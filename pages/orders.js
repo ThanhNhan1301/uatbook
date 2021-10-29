@@ -43,12 +43,13 @@ export default function Orders() {
             <form className='text-center mb-8'>
                 <input
                     type='date'
-                    className='outline-none text-center border py-1 pr-2'
+                    className='outline-none bg-white px-2 py-1 border border-gray-300 rounded-md shadow-md'
                     onChange={handleOnChange}
+                    placeholder='dd/mm/yyyy'
                 />
             </form>
             <div className='w-[96%] m-auto overflow-x-auto scroll_custom_vertical'>
-                <table className='select-none'>
+                <table className='select-none w-full'>
                     <thead>
                         <th>Date</th>
                         <th>Name</th>
