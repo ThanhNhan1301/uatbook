@@ -42,7 +42,7 @@ export default function Table({ data, handleDeleteItem }) {
                                                     setItemSelected(item)
                                                     setShowOrder(!showOrder)
                                                 }}
-                                                disabled={item.sl2 <= 0 ? true : false}
+                                                // disabled={item.sl2 <= 0 ? true : false}
                                             >
                                                 <MdAddBox />
                                             </button>
