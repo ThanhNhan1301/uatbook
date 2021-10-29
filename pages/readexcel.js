@@ -17,6 +17,7 @@ export default function ReadExel() {
                 <input
                     className='outline-none bg-transparent px-2 py-1 border border-gray-300 rounded-md'
                     type='date'
+                    name='date-input'
                     onChange={handleOnChange}
                     // placeholder='Choose Date'
                 />
