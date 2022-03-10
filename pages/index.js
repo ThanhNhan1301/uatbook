@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
+import { FaQrcode, FaArrowLeft } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteBook, getBooks } from '../axios/callApi/book'
-import AddCart from '../components/AddCart'
 import TextInput from '../components/Form/TextInput'
 import Loading from '../components/Loading'
 import Modal from '../components/Modal'
@@ -10,13 +10,18 @@ import Table from '../components/Table'
 import useCheckLogin from '../hooks/useCheckLogin'
 import { addProducts } from '../store/actions/products'
 import filter from '../utils/filter'
+import { QrReader } from 'react-qr-reader'
+import { checkInvalid, updateypeQrcode } from '../axios/callApi/qrcode'
 
 export default function Home() {
     useCheckLogin()
+    const [showCamera, setShowCamera] = useState(false)
     const initialStateModdal = {
+        value: {},
         show: false,
-        type: 'warning',
+        type: '',
         title: '',
+        id: '',
     }
     const dispatch = useDispatch()
     const products = useSelector((state) => state.products.data)
@@ -24,7 +29,7 @@ export default function Home() {
     const [renderData, setRenderData] = useState([])
     const [modal, setModal] = useState(initialStateModdal)
     const [showActions, setShowActions] = useState(false)
-
+    const [showInfo, setShowInfo] = useState({ isShow: false, messange: '', status: false })
     const [isSearch, setIsSerch] = useState('')
     const debounce = useRef(null)
 
@@ -61,6 +66,51 @@ export default function Home() {
         }
         debounce.current = setTimeout(handleFilter, 500)
     }
+
+    const handleOnResultReaderQrCode = async (result, error) => {
+        if (result && !error) {
+            setShowCamera(!showCamera)
+            const value = result?.text
+            if (!value) return
+            const valueChecked = await checkInvalid(value)
+            if (valueChecked.isValid) {
+                if (valueChecked.status === 'active') {
+                    setShowInfo({
+                        type: valueChecked.status,
+                        isShow: true,
+                        messange: 'Mã Qr Code hợp lê.',
+                        status: true,
+                        id: valueChecked.id,
+                    })
+                } else if (valueChecked.status === 'not-used') {
+                    setShowInfo({
+                        isShow: true,
+                        type: valueChecked.status,
+                        messange: 'Mã Qr Code chưa Active.',
+                        status: true,
+                        id: valueChecked.id,
+                    })
+                } else if (valueChecked.status === 'complete') {
+                    setShowInfo({
+                        isShow: true,
+                        type: valueChecked.status,
+                        messange: 'Mã Qr Code đã được áp dụng.',
+                        status: true,
+                        id: valueChecked.id,
+                    })
+                }
+            } else {
+                setShowInfo({
+                    type: valueChecked.status,
+                    isShow: true,
+                    messange: 'Mã Qr Code không hợp lê.',
+                    status: false,
+                    id: valueChecked.id,
+                })
+            }
+        }
+    }
+
     const handleDeleteItem = async (id, idx) => {
         setIsLoading(true)
         await deleteBook(id)
@@ -81,6 +131,29 @@ export default function Home() {
                 return
             })
     }
+
+    const handleSetStatus = async (id, type) => {
+        updateypeQrcode({ id, status: type })
+            .then(() => {
+                setShowInfo({
+                    isShow: false,
+                    messange: '',
+                    status: false,
+                    type: '',
+                    id: '',
+                })
+            })
+            .catch(() => {
+                setShowInfo({
+                    isShow: false,
+                    messange: '',
+                    status: false,
+                    type: '',
+                    id: '',
+                })
+            })
+    }
+
     return (
         <div className='py-10 px-1'>
             <Loading show={isLoading} />
@@ -91,6 +164,100 @@ export default function Home() {
                     handleDeleteItem()
                 }}
             />
+            {showInfo.isShow && (
+                <div className='fixed inset-0 bg-transparent z-20 flex justify-center items-center'>
+                    <div
+                        className={`w-[80%] py-5  text-center rounded-md shadow-md ${
+                            showInfo.status ? 'bg-gray-300' : 'bg-red-500 text-white'
+                        }`}
+                    >
+                        <div>{showInfo.messange}</div>
+                        <div className='mt-7 flex justify-center items-center gap-3'>
+                            <span
+                                className='bg-white py-1 px-6 text-red-400 cursor-pointer rounded-sm shadow-md uppercase'
+                                onClick={() =>
+                                    setShowInfo({
+                                        isShow: false,
+                                        messange: '',
+                                        status: false,
+                                        type: '',
+                                        id: '',
+                                    })
+                                }
+                            >
+                                Close
+                            </span>
+
+                            {showInfo.type === 'not-used' && (
+                                <span
+                                    className='bg-blue-600 py-1 px-6 text-white cursor-pointer rounded-sm shadow-md uppercase'
+                                    onClick={() => handleSetStatus(showInfo.id, 'active')}
+                                >
+                                    Active
+                                </span>
+                            )}
+
+                            {showInfo.type === 'active' && (
+                                <span
+                                    className='bg-blue-600 py-1 px-6 text-white cursor-pointer rounded-sm shadow-md uppercase'
+                                    onClick={() => handleSetStatus(showInfo.id, 'complete')}
+                                >
+                                    Hoàn thành
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showCamera && (
+                <div
+                    className='fixed inset-0 bg-white z-20'
+                    onClick={() => setShowCamera(!showCamera)}
+                >
+                    <div className='pt-4 pl-4 flex items-center gap-1 cursor-pointer relative z-10'>
+                        <div className='w-6 h-6 flex justify-center items-center bg-black text-white rounded-sm'>
+                            <FaArrowLeft />
+                        </div>
+                        <span>Back</span>
+                    </div>
+                    <QrReader
+                        onResult={handleOnResultReaderQrCode}
+                        containerStyle={{}}
+                        videoContainerStyle={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100vw',
+                            height: '100vh',
+                        }}
+                    />
+                </div>
+            )}
+
+            <div
+                className='flex flex-col justify-center items-center mb-7'
+                onClick={() => setShowCamera(!showCamera)}
+            >
+                <div
+                    className='
+                        h-10 px-3 gap-3 
+                        flex justify-center items-center 
+                        rounded-md bg-blue-300 
+                        shadow-md cursor-pointer 
+                        text-white 
+                        active:bg-blue-600 transition
+                         
+                    '
+                >
+                    <FaQrcode size={24} constraints={{ facingMode: 'environment' }} />
+                    <span>Scan QR</span>
+                </div>
+            </div>
+            <div className='mb-6 -mt-2 text-blue-700 text-center'>
+                <Link href={'/qrcode'} passHref={true}>
+                    Management QR Code
+                </Link>
+            </div>
             <div
                 className='
                 w-[400px] text-center mb-4 mt-2 mx-auto
