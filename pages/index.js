@@ -221,8 +221,8 @@ export default function Home() {
                         <span>Back</span>
                     </div>
                     <QrReader
+                        constraints={{ facingMode: 'environment' }}
                         onResult={handleOnResultReaderQrCode}
-                        containerStyle={{}}
                         videoContainerStyle={{
                             position: 'absolute',
                             top: 0,
