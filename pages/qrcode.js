@@ -172,7 +172,7 @@ export default function QrcodePage() {
                 {!showInputQR && (
                     <span
                         onClick={handleCreateOneQR}
-                        className='bg-blue-600 text-[15px] py-1 px-6 text-white cursor-pointer rounded-sm shadow-md'
+                        className='bg-blue-600 text-[15px] h-10 flex justify-center items-center px-6 text-white cursor-pointer rounded-sm shadow-md'
                     >
                         {loading ? <AiOutlineLoading3Quarters /> : 'Tạo 1 QR Code'}
                     </span>
@@ -186,13 +186,13 @@ export default function QrcodePage() {
                         }}
                         className='bg-black text-[15px] py-1 px-6 text-white cursor-pointer rounded-sm shadow-md'
                     >
-                        Back
+                        Quay lại
                     </span>
                 )}
                 {!showInputQR && (
                     <span
                         onClick={() => setShowInputQR(!showInputQR)}
-                        className='bg-green-600 text-[15px] py-1 px-6 text-white cursor-pointer rounded-sm shadow-md'
+                        className='bg-green-600 text-[15px] h-10 flex justify-center items-center px-6 text-white cursor-pointer rounded-sm shadow-md'
                     >
                         Tạo nhiều QR Code
                     </span>
